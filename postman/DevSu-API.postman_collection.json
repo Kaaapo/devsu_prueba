@@ -167,7 +167,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"numeroCuenta\": \"225487\",\n  \"tipoMovimiento\": \"Retiro\",\n  \"valor\": 575\n}"
+              "raw": "{\n  \"numeroCuenta\": \"496825\",\n  \"tipoMovimiento\": \"Retiro\",\n  \"valor\": 100\n}"
             },
             "url": "{{cuenta_host}}/api/movimientos"
           }
