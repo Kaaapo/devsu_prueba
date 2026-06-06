@@ -1,0 +1,199 @@
+{
+  "info": {
+    "name": "DevSu API Microservicios",
+    "description": "Colección para validar cliente-service (8081) y cuenta-service (8082)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "cliente_host", "value": "http://localhost:8081" },
+    { "key": "cuenta_host", "value": "http://localhost:8082" }
+  ],
+  "item": [
+    {
+      "name": "Clientes",
+      "item": [
+        {
+          "name": "Listar clientes",
+          "request": {
+            "method": "GET",
+            "url": "{{cliente_host}}/api/clientes"
+          }
+        },
+        {
+          "name": "Crear cliente",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Jose Lema\",\n  \"genero\": \"M\",\n  \"edad\": 35,\n  \"identificacion\": \"ID001\",\n  \"direccion\": \"Otavalo sn y principal\",\n  \"telefono\": \"098254785\",\n  \"contrasena\": \"1234\",\n  \"estado\": true\n}"
+            },
+            "url": "{{cliente_host}}/api/clientes"
+          }
+        },
+        {
+          "name": "Obtener cliente por ID",
+          "request": {
+            "method": "GET",
+            "url": "{{cliente_host}}/api/clientes/1"
+          }
+        },
+        {
+          "name": "Actualizar cliente (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Jose Lema\",\n  \"genero\": \"M\",\n  \"edad\": 36,\n  \"identificacion\": \"ID001\",\n  \"direccion\": \"Otavalo sn y principal\",\n  \"telefono\": \"098254785\",\n  \"contrasena\": \"1234\",\n  \"estado\": true\n}"
+            },
+            "url": "{{cliente_host}}/api/clientes/1"
+          }
+        },
+        {
+          "name": "Actualizar cliente (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"telefono\": \"099999999\"\n}"
+            },
+            "url": "{{cliente_host}}/api/clientes/1"
+          }
+        },
+        {
+          "name": "Eliminar cliente",
+          "request": {
+            "method": "DELETE",
+            "url": "{{cliente_host}}/api/clientes/99"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cuentas",
+      "item": [
+        {
+          "name": "Listar cuentas",
+          "request": {
+            "method": "GET",
+            "url": "{{cuenta_host}}/api/cuentas"
+          }
+        },
+        {
+          "name": "Crear cuenta",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"numeroCuenta\": \"585545\",\n  \"tipo\": \"Corriente\",\n  \"saldoInicial\": 1000,\n  \"estado\": true,\n  \"clienteId\": 1\n}"
+            },
+            "url": "{{cuenta_host}}/api/cuentas"
+          }
+        },
+        {
+          "name": "Obtener cuenta por ID",
+          "request": {
+            "method": "GET",
+            "url": "{{cuenta_host}}/api/cuentas/1"
+          }
+        },
+        {
+          "name": "Actualizar cuenta (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"numeroCuenta\": \"478758\",\n  \"tipo\": \"Ahorros\",\n  \"saldoInicial\": 2000,\n  \"saldoDisponible\": 1425,\n  \"estado\": true,\n  \"clienteId\": 1\n}"
+            },
+            "url": "{{cuenta_host}}/api/cuentas/1"
+          }
+        },
+        {
+          "name": "Actualizar cuenta (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": true\n}"
+            },
+            "url": "{{cuenta_host}}/api/cuentas/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Movimientos",
+      "item": [
+        {
+          "name": "Listar movimientos",
+          "request": {
+            "method": "GET",
+            "url": "{{cuenta_host}}/api/movimientos"
+          }
+        },
+        {
+          "name": "Registrar retiro (F2)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"numeroCuenta\": \"478758\",\n  \"tipoMovimiento\": \"Retiro\",\n  \"valor\": 575,\n  \"fecha\": \"2022-02-01\"\n}"
+            },
+            "url": "{{cuenta_host}}/api/movimientos"
+          }
+        },
+        {
+          "name": "Registrar deposito (F2)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"numeroCuenta\": \"225487\",\n  \"tipoMovimiento\": \"Deposito\",\n  \"valor\": 600,\n  \"fecha\": \"2022-02-10\"\n}"
+            },
+            "url": "{{cuenta_host}}/api/movimientos"
+          }
+        },
+        {
+          "name": "Retiro sin saldo (F3)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"numeroCuenta\": \"225487\",\n  \"tipoMovimiento\": \"Retiro\",\n  \"valor\": 575\n}"
+            },
+            "url": "{{cuenta_host}}/api/movimientos"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reportes",
+      "item": [
+        {
+          "name": "Estado de cuenta (F4)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{cuenta_host}}/api/reportes?cliente=Marianela Montalvo&fechaInicio=2022-02-01&fechaFin=2022-02-28",
+              "host": ["{{cuenta_host}}"],
+              "path": ["api", "reportes"],
+              "query": [
+                { "key": "cliente", "value": "Marianela Montalvo" },
+                { "key": "fechaInicio", "value": "2022-02-01" },
+                { "key": "fechaFin", "value": "2022-02-28" }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
