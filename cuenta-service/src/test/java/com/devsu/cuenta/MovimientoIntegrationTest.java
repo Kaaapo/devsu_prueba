@@ -75,6 +75,28 @@ class MovimientoIntegrationTest {
     }
 
     @Test
+    void debeRechazarCuentaConClienteInactivo() throws Exception {
+        ClienteReplica clienteInactivo = new ClienteReplica();
+        clienteInactivo.setClienteId(2L);
+        clienteInactivo.setNombre("Cliente Inactivo");
+        clienteInactivo.setEstado(false);
+        clienteReplicaRepository.save(clienteInactivo);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("numeroCuenta", "999888");
+        body.put("tipo", "Ahorros");
+        body.put("saldoInicial", 100);
+        body.put("estado", true);
+        body.put("clienteId", 2);
+
+        mockMvc.perform(post("/api/cuentas")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("El cliente Cliente Inactivo no está activo"));
+    }
+
+    @Test
     void debeRegistrarDepositoYActualizarSaldo() throws Exception {
         Map<String, Object> body = new HashMap<>();
         body.put("numeroCuenta", "225487");

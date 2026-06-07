@@ -1,5 +1,6 @@
 package com.devsu.cuenta.interfaces.rest;
 
+import com.devsu.cuenta.domain.exception.ClienteInactivoException;
 import com.devsu.cuenta.domain.exception.SaldoNoDisponibleException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SaldoNoDisponibleException.class)
     public ResponseEntity<Map<String, Object>> handleSaldoNoDisponible(SaldoNoDisponibleException ex, WebRequest request) {
         return buildError(HttpStatus.CONFLICT, ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(ClienteInactivoException.class)
+    public ResponseEntity<Map<String, Object>> handleClienteInactivo(ClienteInactivoException ex, WebRequest request) {
+        return buildError(HttpStatus.BAD_REQUEST, ex.getMessage(), request);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)

@@ -1,5 +1,6 @@
 package com.devsu.cuenta.application;
 
+import com.devsu.cuenta.domain.exception.ClienteInactivoException;
 import com.devsu.cuenta.domain.model.ClienteReplica;
 import com.devsu.cuenta.domain.model.Cuenta;
 import com.devsu.cuenta.domain.port.ClienteReplicaRepositoryPort;
@@ -78,7 +79,7 @@ public class CuentaService {
         ClienteReplica cliente = clienteReplicaRepository.findById(clienteId)
                 .orElseThrow(() -> new EntityNotFoundException("Cliente con ID " + clienteId + " no encontrado"));
         if (!Boolean.TRUE.equals(cliente.getEstado())) {
-            throw new IllegalArgumentException("El cliente " + cliente.getNombre() + " no está activo");
+            throw new ClienteInactivoException(cliente.getNombre());
         }
     }
 }
