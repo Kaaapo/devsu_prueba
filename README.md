@@ -122,6 +122,7 @@ El archivo `BaseDatos.sql` en la raíz contiene el mismo esquema y datos en un s
 3. Verificar variables de la colección:
    - `cliente_host` = `http://localhost:8081`
    - `cuenta_host` = `http://localhost:8082`
+   - `cliente_id` = se llena automáticamente al ejecutar **Crear cliente (RabbitMQ)**
 
 #### Flujo de prueba recomendado
 
@@ -215,8 +216,8 @@ mvn test
 | Prueba | Archivo | Requisito |
 |---|---|---|
 | F5 — Unitario dominio Cliente | `cliente-service/.../ClienteTest.java` | 4 tests |
-| F6 — Integración movimientos | `cuenta-service/.../MovimientoIntegrationTest.java` | 2 tests |
-| Karate DSL | `cuenta-service/.../karate/movimientos.feature` | 2 escenarios (F2 + F3) |
+| F6 — Integración movimientos y cuentas | `cuenta-service/.../MovimientoIntegrationTest.java` | 3 tests |
+| Karate DSL | `cuenta-service/src/test/resources/karate/movimientos.feature` | 2 escenarios (F2 + F3) |
 
 Reporte HTML de Karate: `cuenta-service/target/karate-reports/karate-summary.html`
 
@@ -294,6 +295,7 @@ java -jar cuenta-service/target/cuenta-service-1.0.0.jar
 - **F2:** Al registrar un movimiento se actualiza `saldoDisponible` y se guarda el historial.
 - **F3:** Si el saldo queda negativo, retorna HTTP 409 con mensaje `"Saldo no disponible"`.
 - **F4:** Reporte JSON con cuentas del cliente y movimientos en el rango de fechas.
+- **Cuentas:** No se puede crear ni reasignar una cuenta a un cliente inactivo; retorna HTTP 400 con mensaje `"El cliente {nombre} no está activo"`.
 
 ## Entregables
 
@@ -303,8 +305,8 @@ java -jar cuenta-service/target/cuenta-service-1.0.0.jar
 | `postman/DevSu-API.postman_collection.json` | Colección Postman para validar endpoints |
 | `docker/postgres-*/init.sql` | Scripts de carga automática en Docker |
 | `ClienteTest.java` | F5 — Prueba unitaria dominio Cliente |
-| `MovimientoIntegrationTest.java` | F6 — Prueba de integración |
-| `movimientos.feature` | Karate DSL — pruebas HTTP F2 y F3 |
+| `MovimientoIntegrationTest.java` | F6 — Pruebas de integración (movimientos y cliente inactivo) |
+| `movimientos.feature` | Karate DSL — pruebas HTTP F2 y F3 (`src/test/resources/karate/`) |
 
 ## Consideraciones de escalabilidad, resiliencia y rendimiento
 

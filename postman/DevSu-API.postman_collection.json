@@ -1,33 +1,22 @@
 {
   "info": {
     "name": "DevSu API Microservicios",
-    "description": "Colección para validar cliente-service (8081) y cuenta-service (8082)",
+    "description": "Colección para validar cliente-service (8081) y cuenta-service (8082).\n\nFlujo recomendado: F1 (listar) → F2/F3 (movimientos) → F4 (reporte) → RabbitMQ (crear cliente + cuenta).\nLa variable `cliente_id` se guarda al crear un cliente nuevo.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     { "key": "cliente_host", "value": "http://localhost:8081" },
-    { "key": "cuenta_host", "value": "http://localhost:8082" }
+    { "key": "cuenta_host", "value": "http://localhost:8082" },
+    { "key": "cliente_id", "value": "4" }
   ],
   "item": [
     {
       "name": "Clientes",
       "item": [
         {
-          "name": "Listar clientes",
+          "name": "Listar clientes (F1)",
           "request": {
             "method": "GET",
-            "url": "{{cliente_host}}/api/clientes"
-          }
-        },
-        {
-          "name": "Crear cliente",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Jose Lema\",\n  \"genero\": \"M\",\n  \"edad\": 35,\n  \"identificacion\": \"ID001\",\n  \"direccion\": \"Otavalo sn y principal\",\n  \"telefono\": \"098254785\",\n  \"contrasena\": \"1234\",\n  \"estado\": true\n}"
-            },
             "url": "{{cliente_host}}/api/clientes"
           }
         },
@@ -63,10 +52,41 @@
           }
         },
         {
-          "name": "Eliminar cliente",
+          "name": "Crear cliente (RabbitMQ)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const body = pm.response.json();",
+                  "    pm.collectionVariables.set('cliente_id', body.clienteId);",
+                  "    pm.test('clienteId guardado en variable cliente_id', function () {",
+                  "        pm.expect(body.clienteId).to.be.a('number');",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Cliente Prueba\",\n  \"genero\": \"M\",\n  \"edad\": 30,\n  \"identificacion\": \"ID999\",\n  \"direccion\": \"Calle Test\",\n  \"telefono\": \"099999999\",\n  \"contrasena\": \"test123\",\n  \"estado\": true\n}"
+            },
+            "url": "{{cliente_host}}/api/clientes",
+            "description": "Usa identificación ID999 (no existe en datos seed). Si ya fue creado antes, cambia identificacion a ID998, ID997, etc."
+          }
+        },
+        {
+          "name": "Eliminar cliente (RabbitMQ)",
           "request": {
             "method": "DELETE",
-            "url": "{{cliente_host}}/api/clientes/99"
+            "url": "{{cliente_host}}/api/clientes/{{cliente_id}}",
+            "description": "Elimina el cliente creado en 'Crear cliente (RabbitMQ)'. Ejecutar después de probar la sincronización."
           }
         }
       ]
@@ -75,21 +95,9 @@
       "name": "Cuentas",
       "item": [
         {
-          "name": "Listar cuentas",
+          "name": "Listar cuentas (F1)",
           "request": {
             "method": "GET",
-            "url": "{{cuenta_host}}/api/cuentas"
-          }
-        },
-        {
-          "name": "Crear cuenta",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"numeroCuenta\": \"585545\",\n  \"tipo\": \"Corriente\",\n  \"saldoInicial\": 1000,\n  \"estado\": true,\n  \"clienteId\": 1\n}"
-            },
             "url": "{{cuenta_host}}/api/cuentas"
           }
         },
@@ -98,6 +106,19 @@
           "request": {
             "method": "GET",
             "url": "{{cuenta_host}}/api/cuentas/1"
+          }
+        },
+        {
+          "name": "Crear cuenta (RabbitMQ)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"numeroCuenta\": \"999001\",\n  \"tipo\": \"Ahorros\",\n  \"saldoInicial\": 500,\n  \"estado\": true,\n  \"clienteId\": {{cliente_id}}\n}"
+            },
+            "url": "{{cuenta_host}}/api/cuentas",
+            "description": "Ejecutar 2–3 s después de 'Crear cliente (RabbitMQ)'. Usa la variable cliente_id y un número de cuenta nuevo."
           }
         },
         {
@@ -137,19 +158,20 @@
           }
         },
         {
-          "name": "Registrar retiro (F2)",
+          "name": "Registrar deposito (F2)",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"numeroCuenta\": \"478758\",\n  \"tipoMovimiento\": \"Retiro\",\n  \"valor\": 575,\n  \"fecha\": \"2022-02-01\"\n}"
+              "raw": "{\n  \"numeroCuenta\": \"225487\",\n  \"tipoMovimiento\": \"Deposito\",\n  \"valor\": 100,\n  \"fecha\": \"2022-02-15\"\n}"
             },
-            "url": "{{cuenta_host}}/api/movimientos"
+            "url": "{{cuenta_host}}/api/movimientos",
+            "description": "Depósito sobre cuenta con saldo 700. Esperado: HTTP 201, saldo 800."
           }
         },
         {
-          "name": "Registrar deposito (F2)",
+          "name": "Registrar deposito (Karate F2)",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -157,7 +179,8 @@
               "mode": "raw",
               "raw": "{\n  \"numeroCuenta\": \"225487\",\n  \"tipoMovimiento\": \"Deposito\",\n  \"valor\": 600,\n  \"fecha\": \"2022-02-10\"\n}"
             },
-            "url": "{{cuenta_host}}/api/movimientos"
+            "url": "{{cuenta_host}}/api/movimientos",
+            "description": "Escenario usado en pruebas Karate: saldo inicial 700 + 600 = 1300."
           }
         },
         {
@@ -169,7 +192,21 @@
               "mode": "raw",
               "raw": "{\n  \"numeroCuenta\": \"496825\",\n  \"tipoMovimiento\": \"Retiro\",\n  \"valor\": 100\n}"
             },
-            "url": "{{cuenta_host}}/api/movimientos"
+            "url": "{{cuenta_host}}/api/movimientos",
+            "description": "Cuenta 496825 tiene saldo 0. Esperado: HTTP 409, message 'Saldo no disponible'."
+          }
+        },
+        {
+          "name": "Registrar retiro histórico",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"numeroCuenta\": \"478758\",\n  \"tipoMovimiento\": \"Retiro\",\n  \"valor\": 575,\n  \"fecha\": \"2022-02-01\"\n}"
+            },
+            "url": "{{cuenta_host}}/api/movimientos",
+            "description": "Reproduce movimiento histórico del script SQL. Solo usar sobre datos frescos (docker-compose down -v)."
           }
         }
       ]
